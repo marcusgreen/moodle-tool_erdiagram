@@ -36,10 +36,9 @@ class component extends moodleform {
     protected function definition() {
         global $CFG;
         $mform = $this->_form;
-        $mform->addElement('text', 'pluginfolder', get_string('pluginfolder', 'tool_erdiagram'));
+        $plugins = $this->get_plugins();
 
-        $mform->setDefault('pluginfolder', 'mod/book');
-        $mform->addHelpButton('pluginfolder', 'pluginfolder', 'tool_erdiagram');
+        $mform->addElement('select', 'pluginfolder', 'Plugins', $plugins);
         $mform->setType('pluginfolder', PARAM_TEXT);
 
         $mform->addElement('advcheckbox', 'fieldnames', 'Field Names');
@@ -47,5 +46,25 @@ class component extends moodleform {
 
         $mform->addElement('submit', 'submitbutton', get_string('submit'));
     }
+    /**
+     * Get an array of all installed plugins with the folder as the key
+     * and the name string as the value
+     * @return array
+     */
+    private function get_plugins(): array {
+        $pluginman = \core_plugin_manager::instance();
+        $plugininfo = $pluginman->get_plugins();
+        foreach ($plugininfo as $plugintype => $pluginnames) {
+            foreach ($pluginnames as $pluginname => $pluginfo) {
+                if ($plugintype == 'mod') {
+                    $pname = get_string('pluginname', $pluginfo->name);
+                } else {
+                    $pname = get_string('pluginname', $plugintype.'_'.$pluginname);
+                }
 
+                $plugins[$plugintype .'/'. $pluginname] = "$plugintype _$pname";
+            }
+        }
+        return $plugins;
+    }
 }

@@ -26,7 +26,6 @@ namespace tool_erdiagram;
  */
 class diagram {
 
-
     /**
      * Extract data from the xml file and convert it to
      * mermaid er diagram markdown.
@@ -157,11 +156,12 @@ EOF;
             // * Have a name which matches another table exactly
             // * Or match another table with the 'id' suffix
             foreach ($table->getFields() as $field) {
-
                 $fieldtype = $this->get_field_type($field->getType());
                 $fieldname = $field->getName();
                 $reftable = '';
-
+                if (!is_array($fields)) {
+                    continue;
+                }
                 if (in_array("$tablename:{$fields[0]}", $tablelinks)) {
                     // This column has an explicit reference already.
                     continue;
